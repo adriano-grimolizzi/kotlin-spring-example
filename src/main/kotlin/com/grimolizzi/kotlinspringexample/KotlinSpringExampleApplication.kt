@@ -9,4 +9,3 @@ class KotlinSpringExampleApplication
 fun main(args: Array<String>) {
 	runApplication<KotlinSpringExampleApplication>(*args)
 }
-

@@ -7,7 +7,5 @@ import org.springframework.web.bind.annotation.RestController
 class MainController(val service: MainService) {
 
     @GetMapping("/metadata")
-    fun getMetadata(): Metadata {
-        return service.getFile()
-    }
+    fun getMetadata(): Metadata = service.getFile()
 }

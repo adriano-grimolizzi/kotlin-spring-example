@@ -4,8 +4,10 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-class MainController {
+class MainController(val service: MainService) {
 
-    @GetMapping("/hello")
-    fun sayHello() = "Hello World!"
+    @GetMapping("/metadata")
+    fun getMetadata(): Metadata {
+        return service.getFile()
+    }
 }

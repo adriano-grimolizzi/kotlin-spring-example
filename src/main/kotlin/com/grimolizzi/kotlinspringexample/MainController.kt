@@ -29,9 +29,6 @@ class MainController(
     fun store(@RequestParam("file") file: MultipartFile) =
         minioService.store(file)
 
-    @GetMapping("/get")
-    fun asfd(): Metadata = minioService.getFile()
-
     @GetMapping("/metadata")
     fun getMetadata(): MutableList<Metadata> = metadataRepository.findAll()
 

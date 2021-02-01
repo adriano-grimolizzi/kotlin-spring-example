@@ -6,13 +6,12 @@ import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
 import java.io.InputStream
 import java.io.BufferedInputStream
-import java.lang.Exception
-import java.nio.file.Path
 
 @Service
 class MinioService(private val properties: MinioProperties) {
 
-    val minioClient: MinioClient = MinioClient.builder()
+    // It's 'var' because of the function 'changePort'
+    var minioClient: MinioClient = MinioClient.builder()
         .endpoint(properties.endpoint)
         .credentials(properties.accessKey, properties.secretKey)
         .build()
@@ -28,9 +27,8 @@ class MinioService(private val properties: MinioProperties) {
     fun store(file: MultipartFile) {
         val inputStream: InputStream = BufferedInputStream(file.inputStream)
 
-        val bucketExists = minioClient.bucketExists(BucketExistsArgs.builder().bucket(properties.bucketName).build())
-        if (!bucketExists) {
-            minioClient.makeBucket(MakeBucketArgs.builder().bucket(properties.bucketName).build())
+        if (!minioClient.bucketExists(getBucketExistsArgs())) {
+            minioClient.makeBucket(getMakeBucketArgs())
         }
 
         minioClient.putObject(
@@ -44,5 +42,14 @@ class MinioService(private val properties: MinioProperties) {
         )
     }
 
-    fun getFile() = Metadata("MarioMagnotta.jpg", "image/jpeg")
+    fun changePort(newPort: Int) {
+        minioClient = MinioClient.builder()
+            .endpoint("http://localhost:$newPort/")
+            .credentials(properties.accessKey, properties.secretKey)
+            .build()
+    }
+    fun getBucketExistsArgs(): BucketExistsArgs = BucketExistsArgs.builder().bucket(properties.bucketName).build()
+    fun getMakeBucketArgs(): MakeBucketArgs = MakeBucketArgs.builder().bucket(properties.bucketName).build()
+
+//    fun getFile() = Metadata("MarioMagnotta.jpg", "image/jpeg")
 }

@@ -1,8 +1,12 @@
 package com.grimolizzi.kotlinspringexample
 
+import com.grimolizzi.kotlinspringexample.model.Metadata
+import com.grimolizzi.kotlinspringexample.utils.FileUtils
 import com.ninjasquad.springmockk.MockkBean
 import io.mockk.every
+import io.mockk.justRun
 import io.mockk.verify
+import org.junit.Assert.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.beans.factory.annotation.Autowired
@@ -11,6 +15,8 @@ import org.springframework.http.MediaType
 import org.springframework.test.context.junit.jupiter.SpringExtension
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
+import java.io.InputStream
 
 @ExtendWith(SpringExtension::class)
 @WebMvcTest(MainController::class)
@@ -26,41 +32,76 @@ class MainControllerTests {
     private lateinit var mockMvc: MockMvc
 
     @Test
-    fun `Should call metadataRepository on Post`() {
+    fun `Should handle store method`() {
 
-        val mockMetadata = Metadata("GermanoMosconi.mp3", "audio/mp3")
+        val mockMetadata = Metadata("file.txt", "text/plain")
 
         every { mockMetadataRepository.save(any()) } returns mockMetadata
+        justRun { mockService.store(any()) }
 
-        this.mockMvc.perform(
-            MockMvcRequestBuilders
-                .post("/metadata")
-                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+        mockMvc.perform(
+            MockMvcRequestBuilders.multipart("/")
+                .file(FileUtils.getMockMultipartFile())
+                .characterEncoding("UTF-8")
         )
+            .andExpect(status().isOk)
+            .andReturn()
 
         verify { mockMetadataRepository.save(any()) }
+        verify { mockService.store(any()) }
     }
 
-//    @Test
-//    fun `Should return Metadata`() {
-//        val expectedMetadata = Metadata("MarioMagnotta.jpeg", "image/jpeg")
-//        val objectMapper = ObjectMapper()
-//        val expectedMetadataJson = objectMapper.writeValueAsString(expectedMetadata)
-//
-//        every { mockService.getFile() } returns expectedMetadata
-//
-//        performMockMvc()
-//            .andExpect(status().isOk)
-//            .andExpect(content().json(expectedMetadataJson))
-//            .andReturn()
-//
-//        verify { mockService.getFile() }
-//    }
+    @Test
+    fun `should handle retrieve method`() {
 
-    private fun performMockMvc() =
+        val mockedInputStream: InputStream = "WILSON IS DATING AMBER".byteInputStream()
+
+        every { mockService.retrieve("file.txt") } returns mockedInputStream
+
+        val mockMvcResponse = mockMvc.perform(
+            MockMvcRequestBuilders
+                .get("/file.txt")
+                .contentType(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(status().isOk)
+            .andReturn()
+
+        verify { mockService.retrieve("file.txt") }
+
+        assertEquals(mockMvcResponse.response.contentAsString, "WILSON IS DATING AMBER");
+    }
+
+    @Test
+    fun `Should handle getMetadata method`() {
+
+        val mockedList = listOf(Metadata("file.txt", "text/plain"))
+
+        every { mockMetadataRepository.findAll() } returns mockedList
+
         mockMvc.perform(
             MockMvcRequestBuilders
                 .get("/metadata")
-                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .contentType(MediaType.APPLICATION_JSON)
         )
+            .andExpect(status().isOk)
+            .andReturn()
+
+        verify { mockMetadataRepository.findAll() }
+    }
+
+    @Test
+    fun `Should handle deleteAll (metadata) method`() {
+
+        justRun { mockMetadataRepository.deleteAll() }
+
+        mockMvc.perform(
+            MockMvcRequestBuilders
+                .delete("/metadata")
+                .contentType(MediaType.APPLICATION_JSON)
+        )
+            .andExpect(status().isOk)
+            .andReturn()
+
+        verify { mockMetadataRepository.deleteAll() }
+    }
 }

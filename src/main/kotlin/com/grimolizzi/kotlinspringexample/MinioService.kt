@@ -25,8 +25,6 @@ class MinioService(private val properties: MinioProperties) {
         )
 
     fun store(file: MultipartFile) {
-        val inputStream: InputStream = BufferedInputStream(file.inputStream)
-
         if (!minioClient.bucketExists(getBucketExistsArgs())) {
             minioClient.makeBucket(getMakeBucketArgs())
         }
@@ -36,7 +34,7 @@ class MinioService(private val properties: MinioProperties) {
                 .builder()
                 .bucket(properties.bucketName)
                 .`object`(file.originalFilename)
-                .stream(inputStream, file.size, -1)
+                .stream(BufferedInputStream(file.inputStream), file.size, -1)
                 .contentType(file.contentType)
                 .build()
         )
@@ -48,6 +46,7 @@ class MinioService(private val properties: MinioProperties) {
             .credentials(properties.accessKey, properties.secretKey)
             .build()
     }
+
     fun getBucketExistsArgs(): BucketExistsArgs = BucketExistsArgs.builder().bucket(properties.bucketName).build()
     fun getMakeBucketArgs(): MakeBucketArgs = MakeBucketArgs.builder().bucket(properties.bucketName).build()
 

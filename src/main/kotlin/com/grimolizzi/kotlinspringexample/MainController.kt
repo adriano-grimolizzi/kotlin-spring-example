@@ -1,5 +1,6 @@
 package com.grimolizzi.kotlinspringexample
 
+import com.grimolizzi.kotlinspringexample.model.Metadata
 import org.apache.tomcat.util.http.fileupload.IOUtils
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
@@ -26,15 +27,15 @@ class MainController(
     }
 
     @PostMapping("/")
-    fun store(@RequestParam("file") file: MultipartFile) =
+    fun store(@RequestParam("file") file: MultipartFile) {
+        println("Controller: received file: $file.originalFilename")
+        metadataRepository.save(Metadata(file.originalFilename, file.contentType))
         minioService.store(file)
+    }
 
     @GetMapping("/metadata")
     fun getMetadata(): MutableList<Metadata> = metadataRepository.findAll()
 
-    @PostMapping("/metadata")
-    fun postMetadata() {
-        val metadata = Metadata("Mosconi.pdf", "image/pdf")
-        metadataRepository.save(metadata)
-    }
+    @DeleteMapping("/metadata")
+    fun deleteAll() = metadataRepository.deleteAll()
 }

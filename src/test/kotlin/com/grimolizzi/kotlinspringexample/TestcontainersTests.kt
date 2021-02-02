@@ -1,17 +1,12 @@
 package com.grimolizzi.kotlinspringexample
 
+import com.grimolizzi.kotlinspringexample.utils.FileUtils
 import com.grimolizzi.kotlinspringexample.utils.MinioContainer
 import org.junit.Assert.assertEquals
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.testcontainers.junit.jupiter.Testcontainers
-import org.springframework.mock.web.MockMultipartFile
-import org.springframework.web.multipart.MultipartFile
-
-import java.nio.file.Files
-import java.nio.file.Path
-import java.nio.file.Paths
 
 @SpringBootTest
 @Testcontainers
@@ -33,7 +28,7 @@ class TestcontainersTests {
             mockService.changePort(it.firstMappedPort) // Can't access port 9000...
 
             println("Storing file...")
-            mockService.store(getMockedFile())
+            mockService.store(FileUtils.getMockMultipartFile())
             println("...file stored.")
 
             val retrievedFile = mockService.retrieve("file.txt")
@@ -42,14 +37,5 @@ class TestcontainersTests {
 
             assertEquals(fileContents, "Hello, World!")
         }
-    }
-
-    fun getMockedFile(): MultipartFile {
-        val path: Path = Paths.get("src/test/resources/file.txt")
-        val name = "file.txt"
-        val originalFileName = "file.txt"
-        val contentType = "text/plain"
-        val fileContent: ByteArray = Files.readAllBytes(path)
-        return MockMultipartFile(name, originalFileName, contentType, fileContent)
     }
 }

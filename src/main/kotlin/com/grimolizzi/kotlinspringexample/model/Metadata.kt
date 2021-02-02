@@ -1,4 +1,4 @@
-package com.grimolizzi.kotlinspringexample
+package com.grimolizzi.kotlinspringexample.model
 
 import org.springframework.data.annotation.Id
 

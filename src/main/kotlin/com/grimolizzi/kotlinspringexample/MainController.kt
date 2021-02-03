@@ -1,6 +1,8 @@
 package com.grimolizzi.kotlinspringexample
 
 import com.grimolizzi.kotlinspringexample.model.Metadata
+import com.grimolizzi.kotlinspringexample.services.MetadataService
+import com.grimolizzi.kotlinspringexample.services.MinioService
 import org.apache.tomcat.util.http.fileupload.IOUtils
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
@@ -10,8 +12,8 @@ import javax.servlet.http.HttpServletResponse
 
 @RestController
 class MainController(
-    val minioService: MinioService,
-    val metadataRepository: MetadataRepository
+    private val minioService: MinioService,
+    private val metadataService: MetadataService
 ) {
     @GetMapping("/{filename}")
     fun retrieve(@PathVariable("filename") filename: String, response: HttpServletResponse) {
@@ -29,13 +31,13 @@ class MainController(
     @PostMapping("/")
     fun store(@RequestParam("file") file: MultipartFile) {
         println("Controller: received file: $file.originalFilename")
-        metadataRepository.save(Metadata(file.originalFilename, file.contentType))
+        metadataService.save(Metadata(file.originalFilename, file.contentType))
         minioService.store(file)
     }
 
     @GetMapping("/metadata")
-    fun getMetadata(): MutableList<Metadata> = metadataRepository.findAll()
+    fun getMetadata(): List<Metadata> = metadataService.findAll()
 
     @DeleteMapping("/metadata")
-    fun deleteAll() = metadataRepository.deleteAll()
+    fun deleteAll() = metadataService.deleteAll()
 }

@@ -1,4 +1,4 @@
-package com.grimolizzi.kotlinspringexample
+package com.grimolizzi.kotlinspringexample.services
 
 import com.grimolizzi.kotlinspringexample.properties.MinioProperties
 import io.minio.*

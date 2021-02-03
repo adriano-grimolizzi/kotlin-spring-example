@@ -1,4 +1,4 @@
-package com.grimolizzi.kotlinspringexample
+package com.grimolizzi.kotlinspringexample.services
 
 import com.grimolizzi.kotlinspringexample.utils.FileUtils
 import com.grimolizzi.kotlinspringexample.utils.MinioContainer
@@ -10,7 +10,7 @@ import org.testcontainers.junit.jupiter.Testcontainers
 
 @SpringBootTest
 @Testcontainers
-class TestcontainersTests {
+class MinioServiceTests {
 
     private val accessKey = "AKIAIOSFODNN7EXAMPLE"
     private val secretKey = "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"

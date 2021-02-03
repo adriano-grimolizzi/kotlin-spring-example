@@ -1,6 +1,8 @@
 package com.grimolizzi.kotlinspringexample
 
 import com.grimolizzi.kotlinspringexample.model.Metadata
+import com.grimolizzi.kotlinspringexample.services.MetadataService
+import com.grimolizzi.kotlinspringexample.services.MinioService
 import com.grimolizzi.kotlinspringexample.utils.FileUtils
 import com.ninjasquad.springmockk.MockkBean
 import io.mockk.every
@@ -26,7 +28,7 @@ class MainControllerTests {
     lateinit var mockService: MinioService
 
     @MockkBean
-    lateinit var mockMetadataRepository: MetadataRepository
+    lateinit var mockMetadataRepository: MetadataService
 
     @Autowired
     private lateinit var mockMvc: MockMvc
@@ -53,7 +55,7 @@ class MainControllerTests {
     }
 
     @Test
-    fun `should handle retrieve method`() {
+    fun `Should handle retrieve method`() {
 
         val mockedInputStream: InputStream = "WILSON IS DATING AMBER".byteInputStream()
 

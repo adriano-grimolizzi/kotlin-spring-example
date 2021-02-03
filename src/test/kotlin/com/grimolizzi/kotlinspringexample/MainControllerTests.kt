@@ -34,21 +34,22 @@ class MainControllerTests {
     @Test
     fun `Should handle store method`() {
 
+        val mockedControllerInput = FileUtils.getMockMultipartFile()
         val mockMetadata = Metadata("file.txt", "text/plain")
 
-        every { mockMetadataRepository.save(any()) } returns mockMetadata
-        justRun { mockService.store(any()) }
+        every { mockMetadataRepository.save(mockMetadata) } returns mockMetadata
+        justRun { mockService.store(mockedControllerInput) }
 
         mockMvc.perform(
             MockMvcRequestBuilders.multipart("/")
-                .file(FileUtils.getMockMultipartFile())
+                .file(mockedControllerInput)
                 .characterEncoding("UTF-8")
         )
             .andExpect(status().isOk)
             .andReturn()
 
-        verify { mockMetadataRepository.save(any()) }
-        verify { mockService.store(any()) }
+        verify { mockMetadataRepository.save(mockMetadata) }
+        verify { mockService.store(mockedControllerInput) }
     }
 
     @Test
@@ -68,7 +69,7 @@ class MainControllerTests {
 
         verify { mockService.retrieve("file.txt") }
 
-        assertEquals(mockMvcResponse.response.contentAsString, "WILSON IS DATING AMBER");
+        assertEquals(mockMvcResponse.response.contentAsString, "WILSON IS DATING AMBER")
     }
 
     @Test

@@ -13,4 +13,9 @@ class Metadata {
         this.fileName = fileName
         this.contentType = contentType
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (other == null || other !is Metadata) return false
+        return fileName == other.fileName && contentType == other.contentType
+    }
 }

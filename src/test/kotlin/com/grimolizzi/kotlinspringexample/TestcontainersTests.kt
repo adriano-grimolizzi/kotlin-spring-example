@@ -36,6 +36,7 @@ class TestcontainersTests {
             val fileContents = retrievedFile.bufferedReader().use { it.readText() }
 
             assertEquals(fileContents, "Hello, World!")
+            it.stop()
         }
     }
 }

@@ -22,7 +22,6 @@ class MinioContainer(image: String?, credentials: CredentialsProvider?) :
     }
 
     init {
-        withNetworkAliases("minio-" + Base58.randomString(6))
         addExposedPort(DEFAULT_PORT)
         if (credentials != null) {
             withEnv(MINIO_ACCESS_KEY, credentials.accessKey)
